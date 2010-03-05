@@ -1,9 +1,10 @@
 (require 'cl)
 
 (let* ((basedir (file-name-directory (directory-file-name (file-name-directory load-file-name))))
-       (todir (read-file-name "Install to: " "~/.emacs.d"))
+       (todir (read-file-name "Install to: " "~/.emacs.d/" "~/.emacs.d/"))
        (basedictdir (concat basedir "/dict"))
        (todictdir (concat todir "/ac-dict")))
+  (add-to-list 'load-path basedir)
   (make-directory todictdir t)
   (loop for file in (directory-files basedir t "^.*\\.el$")
         do (byte-compile-file file))
