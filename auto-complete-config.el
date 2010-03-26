@@ -37,7 +37,7 @@
 
 (defvar ac-imenu-index nil)
 
-(ac-clear-variable-every-minute 'ac-imenu-index)
+(ac-clear-variable-every-10-minutes 'ac-imenu-index)
 
 (defun ac-imenu-candidates ()
   (loop with i = 0
@@ -45,7 +45,10 @@
                        (unless (local-variable-p 'ac-imenu-index)
                          (make-local-variable 'ac-imenu-index))
                        (or ac-imenu-index
-                           (setq ac-imenu-index (ignore-errors (imenu--make-index-alist)))))
+                           (setq ac-imenu-index
+                                 (ignore-errors
+                                   (with-no-warnings
+                                     (imenu--make-index-alist))))))
         with result
         while (and stack (or (not (integerp ac-limit))
                              (< i ac-limit)))
@@ -69,7 +72,8 @@
 
 (ac-define-source imenu
   '((depends imenu)
-    (candidates . ac-imenu-candidates)))
+    (candidates . ac-imenu-candidates)
+    (symbol . "s")))
 
 ;; gtags
 
@@ -91,7 +95,8 @@
   '((candidates . ac-gtags-candidate)
     (candidate-face . ac-gtags-candidate-face)
     (selection-face . ac-gtags-selection-face)
-    (requires . 3)))
+    (requires . 3)
+    (symbol . "s")))
 
 ;; yasnippet
 
@@ -106,31 +111,33 @@
   :group 'auto-complete)
 
 (defun ac-yasnippet-candidate-1 (table)
-  (let ((hashtab (yas/snippet-table-hash table))
-        (parent (if (fboundp 'yas/snippet-table-parent)
-                    (yas/snippet-table-parent table)))
-        candidates)
-    (maphash (lambda (key value)
-               (push key candidates))
-             hashtab)
-    (setq candidates (all-completions ac-prefix (nreverse candidates)))
-    (if parent
-        (setq candidates
-              (append candidates (ac-yasnippet-candidate-1 parent))))
-    candidates))
+  (with-no-warnings
+    (let ((hashtab (yas/snippet-table-hash table))
+          (parent (if (fboundp 'yas/snippet-table-parent)
+                      (yas/snippet-table-parent table)))
+          candidates)
+      (maphash (lambda (key value)
+                 (push key candidates))
+               hashtab)
+      (setq candidates (all-completions ac-prefix (nreverse candidates)))
+      (if parent
+          (setq candidates
+                (append candidates (ac-yasnippet-candidate-1 parent))))
+      candidates)))
 
 (defun ac-yasnippet-candidate ()
-  (if (fboundp 'yas/get-snippet-tables)
-      ;; >0.6.0
-      (apply 'append (mapcar 'ac-yasnippet-candidate-1 (yas/get-snippet-tables major-mode)))
-    (let ((table
-           (if (fboundp 'yas/snippet-table)
-               ;; <0.6.0
-               (yas/snippet-table major-mode)
-             ;; 0.6.0
-             (yas/current-snippet-table))))
-      (if table
-          (ac-yasnippet-candidate-1 table)))))
+  (with-no-warnings
+    (if (fboundp 'yas/get-snippet-tables)
+        ;; >0.6.0
+        (apply 'append (mapcar 'ac-yasnippet-candidate-1 (yas/get-snippet-tables major-mode)))
+      (let ((table
+             (if (fboundp 'yas/snippet-table)
+                 ;; <0.6.0
+                 (yas/snippet-table major-mode)
+               ;; 0.6.0
+               (yas/current-snippet-table))))
+        (if table
+            (ac-yasnippet-candidate-1 table))))))
 
 (ac-define-source yasnippet
   '((depends yasnippet)
@@ -142,27 +149,34 @@
 
 ;; semantic
 
-(defun ac-semantic-candidate (prefix)
-  (mapcar 'semantic-tag-name
-          (ignore-errors
-            (or (or (semantic-analyze-possible-completions
-                     (semantic-analyze-current-context)))
-                (senator-find-tag-for-completion (regexp-quote prefix))))))
+(defun ac-semantic-candidates (prefix)
+  (with-no-warnings
+    (delete ""            ; semantic sometimes returns an empty string
+            (mapcar 'semantic-tag-name
+                    (ignore-errors
+                      (or (semantic-analyze-possible-completions
+                           (semantic-analyze-current-context))
+                          (senator-find-tag-for-completion prefix)))))))
 
 (ac-define-source semantic
   '((depends semantic-ia)
-    (candidates . (lambda () (all-completions ac-prefix (ac-semantic-candidate ac-prefix))))
-    (prefix . c-dot)))
+    (candidates . (ac-semantic-candidates ac-prefix))
+    (prefix . c-dot)
+    (requires . 0)
+    (symbol . "f")))
 
 ;; eclim
 
 (defun ac-eclim-candidates ()
-  (loop for c in (eclim/java-complete)
-        collect (nth 1 c)))
+  (with-no-warnings
+    (loop for c in (eclim/java-complete)
+          collect (nth 1 c))))
 
 (ac-define-source eclim
   '((candidates . ac-eclim-candidates)
-    (prefix . c-dot)))
+    (prefix . c-dot)
+    (requires . 0)
+    (symbol . "f")))
 
 
 
@@ -172,11 +186,12 @@
 
 (defvar ac-ropemacs-loaded nil)
 (defun ac-ropemacs-require ()
-  (unless ac-ropemacs-loaded
-    (pymacs-load "ropemacs" "rope-")
-    (if (boundp 'ropemacs-enable-autoimport)
-        (setq ropemacs-enable-autoimport t))
-    (setq ac-ropemacs-loaded t)))
+  (with-no-warnings
+    (unless ac-ropemacs-loaded
+      (pymacs-load "ropemacs" "rope-")
+      (if (boundp 'ropemacs-enable-autoimport)
+          (setq ropemacs-enable-autoimport t))
+      (setq ac-ropemacs-loaded t))))
 
 (defun ac-ropemacs-setup ()
   (ac-ropemacs-require)
@@ -229,10 +244,10 @@
   (add-to-list 'ac-sources 'ac-source-filename))
 
 (defun ac-emacs-lisp-mode-setup ()
-  (setq ac-sources (append '(ac-source-functions ac-source-yasnippet ac-source-variables ac-source-symbols ac-source-features) ac-sources)))
+  (setq ac-sources (append '(ac-source-features ac-source-functions ac-source-yasnippet ac-source-variables ac-source-symbols) ac-sources)))
 
 (defun ac-cc-mode-setup ()
-  (setq ac-sources (append '(ac-source-semantic ac-source-yasnippet ac-source-imenu ac-source-gtags) ac-sources)))
+  (setq ac-sources (append '(ac-source-yasnippet ac-source-gtags) ac-sources)))
 
 (defun ac-ruby-mode-setup ()
   (make-local-variable 'ac-ignores)

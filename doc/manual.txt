@@ -1,4 +1,4 @@
-Title: Auto Complete Mode User Manual
+Title: Auto Complete Mode - User Manual
 Numbering: yes
 CSS: style.css
 
@@ -28,6 +28,11 @@ This user manual covers from how to install and how to use to how to extend. Ple
 
 Auto Complete Mode is licensed under the term of [GPLv3][]. And this document is licensed under the term of [GFDL][].
 
+Downloads
+---------
+
+You can download from [Auto Complete Mode top page](index.txt).
+
 Installation
 ------------
 
@@ -41,11 +46,15 @@ Installation
 
 It is easy to install by using a installation script called `etc/install.el` that is located in the package directory.
 
-Type `M-x load-file RET` in the running Emacs or newly launched Emacs. Then input a file name to load which is a path string with adding `/etc/install.el` to the package directory. For example, if the package directory is `~/tmp/auto-complete-1.2`, the file name will be `~/tmp/auto-complete-1.2/etc/install.el`.
+Type `M-x load-file RET` in the running Emacs or newly launched Emacs. Note that if you want to upgrade `auto-complete-mode`, you have to install in **a newly launched Emacs with `-q` option**. Then input a file name to load which is a path string with adding `/etc/install.el` to the package directory. For example, if the package directory is `~/tmp/auto-complete-1.2`, the file name will be `~/tmp/auto-complete-1.2/etc/install.el`.
 
-Then input a directory where Auto Complete will be intalled. You need to add a directory to `load-path` later if `load-path` doesn't include the directory. The directory is to be `~/.emacs.d` by default.
+Then input a directory where Auto Complete will be installed. You need to add a directory to `load-path` later if `load-path` doesn't include the directory. The directory is to be `~/.emacs.d` by default.
 
 Finally type `RET` to start installation. After installation, you may see the following buffer and follow instructions to edit `.emacs`.
+
+You can also install from terminal like:
+
+    $ emacs -batch -l etc/install.el
 
 **Example message after installation (\*Installation Result* Buffer)**
 
@@ -70,7 +79,7 @@ Then copy all `.el` files and `.elc` files to a directory which is added to `loa
 
     $ cp *.el *.elc ~/.emacs.d
 
-And then install dictionary files. Ther are optional to run Auto Complete Mode, but you should install if you don't have any reason. Dictionary files are located in called `dict` directory, it is needed that they are installed to a directory which is `auto-complete.el` has been installed. If you installed `auto-complete.el` to a directory called `~/.emacs.d`, you also have to install dictionary files to `~/.emacs.d`. Please be careful not to overwrite existed files. It may be rare case, but the installation script above avoids overwrite by renameing `dict` directory to `ac-dict` directory.
+And then install dictionary files. They are optional to run Auto Complete Mode, but you should install if you don't have any reason. Dictionary files are located in called `dict` directory, it is needed that they are installed to a directory which is `auto-complete.el` has been installed. If you installed `auto-complete.el` to a directory called `~/.emacs.d`, you also have to install dictionary files to `~/.emacs.d`. Please be careful not to overwrite existed files. It may be rare case, but the installation script above avoids overwrite by renaming `dict` directory to `ac-dict` directory.
 
     $ cp -r dict ~/.emacs.d
 
@@ -96,7 +105,7 @@ Type some characters in \*scratch\* buffer in a restarted Emacs or newly launche
 
   If you don't see characters `AC` in mode-line (a gray line of bottom of buffer), `auto-complete-mode` is not enabled. Type `M-x auto-complete-mode` to enable and try again.
 
-* Error occured
+* Error occurred
 
   If you have \*Backtrace* with errors or errors in minibuffer (bottom of frame), please contact me with the errors.
 
@@ -107,7 +116,7 @@ First, in a meaning, `auto-complete-mode` has no "usage". Because `auto-complete
 
 ### Input Characters ###
 
-Inputting characters is basic. Any completion will never be shown without any character. So when completion will be started, in other others, what character causes completion to be started? It is good question but it is difficult to answer here. In simple words, completion will be started when just charcter is inserted. See [`ac-trigger-commands`](#ac-trigger-commands) for more details.
+Inputting characters is basic. Any completion will never be shown without any character. So when completion will be started, in other others, what character causes completion to be started? It is good question but it is difficult to answer here. In simple words, completion will be started when just character is inserted. See [`ac-trigger-commands`](#) for more details.
 
 ![Inputting Characters](ac.png)
 
@@ -127,7 +136,7 @@ After completion is started, completion by TAB will be enabled temporarily. Comp
 
   Otherwise, select candidates in cycle by typing TAB.
 
-It may be diffrent a little according to settings, but basically completion by TAB works as we wrote above. A reason why TAB has several meanins is that we want users to do anything with TAB.
+It may be different a little according to settings, but basically completion by TAB works as we wrote above. A reason why TAB has several meanings is that we want users to do anything with TAB.
 
 ### Completion by RET ###
 
@@ -140,11 +149,17 @@ It is necessary to type TAB a few times for completion by TAB. Completion by RET
 
 ### Candidate Selection ###
 
-Following `auto-complete-mode` phyilosophy, it is not recommended to select candidates. Because, it means it has been failed to guess completion, and also it requires for users to do candidate selection which is a high cost operation. We think there is so many cases that requires to do candidate selection, because completion by TAB will help candidate selection somehow and in recent version, a statistic method contributes to make a candidate suggestion more accurate. However, actually, this is such cases. So we also think it is not bad idea to remember how to select candidates.
+Following `auto-complete-mode` philosophy, it is not recommended to select candidates. Because, it means it has been failed to guess completion, and also it requires for users to do candidate selection which is a high cost operation. We think there is so many cases that requires to do candidate selection, because completion by TAB will help candidate selection somehow and in recent version, a statistic method contributes to make a candidate suggestion more accurate. However, actually, this is such cases. So we also think it is not bad idea to remember how to select candidates.
 
-Selecting candidates is not a complex operation. You can select candidates forward or backward by cursor key or `M-p` and `M-n`. According to setting, a behavior of completion by TAB will be changed as a behavior of completion by RET. See [`ac-dwim`](#ac-dwim) for more details.
+Selecting candidates is not a complex operation. You can select candidates forward or backward by cursor key or `M-p` and `M-n`. According to setting, a behavior of completion by TAB will be changed as a behavior of completion by RET. See [`ac-dwim`](#) for more details.
 
 There is other ways to select candidates. `M-1` to select candidate 1, `M-2` to select candidate 2, and so on.
+
+### Help ###
+
+`auto-complete-mode` has two type of help functionalities called *Quick Help* and *Buffer Help*. They are different in a point of displaying. Quick help will appear at the side of completion menu, so you can easily see that, but there is a problem if there is no space to displaying the help. Quick help will be shown automatically. To use quick help, you need to set [`ac-use-quick-help`](#) to `t`. Delay time show quick help is given by [`ac-quick-help-delay`](#).
+
+On other side, buffer help will not be shown without any instructions from users. Buffer help literally display a help in a buffer of other window. It costs much to see than quick help, but it has more readability. To show buffer help, press `C-?` or `f1`. By pressing `C-M-v` or `C-M-S-v` after showing buffer help, you can scroll forward or backward for help buffer. Other commands will be fallbacked and buffer help will be closed.
 
 ### Summary ###
 
@@ -156,6 +171,7 @@ Completion will be started by inserting characters. After completion is started,
 | RET, C-m  | ac-complete | Completion by RET         |
 | down, M-n | ac-next     | Select next candidate     |
 | up, M-p   | ac-previous | Select previous candidate |
+| C-?, f1   | ac-help     | Show buffer help          |
 
 To stop completion, use `C-g` simply.
 
@@ -172,11 +188,11 @@ So, as of `auto-complete` command, it is a little different from an original aut
 
 * Case that only one candidate remains
 
-  Complete immediately withou showing completion menu.
+  Complete immediately without showing completion menu.
 
 * Case that no candidates remains
 
-  Attempt to complete with fuzzy matching. See [Completion by Fuzzy Matching](#Completion by Fuzzy Matching) for more details.
+  Attempt to complete with fuzzy matching. See [Completion by Fuzzy Matching](#) for more details.
 
 * Otherwise
 
@@ -200,32 +216,30 @@ It is difficult what key `auto-complete` command is bound to. It should be bound
 
     (ac-set-trigger-key "TAB")
 
-Trigger key will be enabled after inserting characters. Otherwise it is dealed as an usual command (TAB will be indent). Generally, trigger key is used with `auto-auto-start` bing `nil`.
+Trigger key will be enabled after inserting characters. Otherwise it is dealt as an usual command (TAB will be indent). Generally, trigger key is used with `auto-auto-start` being `nil`.
 
     (setq ac-auto-start nil)
 
-As of `ac-auto-start`, see [Not to complete automatically](#Not to complete automatically) or [`ac-auto-start`](#ac-auto-start) for more details.
+As of `ac-auto-start`, see [Not to complete automatically](#) or [`ac-auto-start`](#) for more details.
 
 ### Candidate Suggestion ###
 
-`auto-complete-mode`はユーザーの補完行動を逐一解析して、可能な限り補完のオーバーヘッドを削減しようとします。具体的には、例えば何度か`foobar`が補完されれば、次回以降は`foobar`が補完候補の上位に配置され、一介あるいは数回以内のTABで補完できる環境を作ります。内部的には`comphist`と呼ばれる機構を使っており、`ac-use-comphist`が`t`の場合にこの機能が有効になります。デフォルトでは有効になっています。収集された行動データは`user-emacs-directory`あるいは`~/.emacs.d`に`ac-comphist.dat`というファイル名で永続化され、次回以降も再利用されます。
+`auto-complete-mode` analyzes completion operations one by one and reduces overheads of completion as much as possible. For example, having a candidate "foobar" been completed few times, `auto-complete-mode` arranges it to top of the candidates next time and make a situation that allows users to complete the word with one time TAB or few times TAB. It is called `comphist` internally, and you can use it by setting `ac-use-comphist` to `t`. It is enabled by default. Collection operations data will be stored in `user-emacs-directory` or `~/.emacs.d/` with a name `ac-comphist.dat`.
 
-優れた補完推測を実現するため、次の二つのデータを収集します。
+`auto-complete-mode` collects two types of data to accomplish accurate candidate suggestion.
 
-* その補完候補が補完された回数
-* その補完候補が補完された位置
+* Count of completion
+* Position of completion
 
-簡単に言えば、単純に補完回数を数えるのではなく、補完位置ごとに補完回数を数えていき、その補完候補のスコアは補完されている位置との比較でうまく重み付けされます。例えばfと入力して`find-file`を補完するという行動を何度か繰り返せば、fを入力した段階で`find-file`が上位に配置されます。ただ、続けてfind-と入力したときに`find-file`が先ほどと同じスコアになるかといえば、そういうわけではなく、先ほどと位置として4離れているわけですから、それだけ重み付けが軽くなります。逆にfind-の後に`find-library`が補完されやすい場合は、そちらの補完候補のスコアのほうが上位に来る可能性が高くなるので、結果的にfの時点では`find-file`が上位に、find-の時点では`find-library`が上位に来るといった、ユーザーの行動を学習したかのような推測が可能になるわけです。
-
-ユーザーはこの機能をできるだけ活用するために、よく入力する単語はできるだけ前の位置で補完するように心がけてください。また、できるだけ行動は一貫してください。補完位置が毎回変わるようではうまく学習できないからです。おそらくあまり気にせず使っていれば、自動的にそのような行動になるでしょう。
+Simply saying, it collects not only a completion count but also a position of completion. A completion candidate will be scored with the count and the point. If you complete `find-file` with a word f few times, in next time `find-file` will be arranged to top of candidates. However it is too simple. Actually `find-file` with `find-` will not have the same score, because a distance between `f` and `find-` will reduce a weight of scoring. It means that if you often complete `find-library` after `find-`, `find-library` will get high score than `find-file` at that position. So `auto-complete-mode` can guess `find-file` will be top after `f` and `find-library` will be top after `find-` as it seems to learn from users' operations.
 
 ### Completion by Dictionary ###
 
-Dictionary is a simple list of string. There is three types of dictionary: user defined dictionary, major mode dictionary, and extension dictionary. You need to add `ac-source-dictionary` to `ac-sources` (default). See [Source](#Source) for more details.
+Dictionary is a simple list of string. There is three types of dictionary: user defined dictionary, major mode dictionary, and extension dictionary. You need to add `ac-source-dictionary` to `ac-sources` (default). See [source](#Source) for more details.
 
 #### User Defined Dictionary ####
 
-User defined dictionary is composed of a list of string specified `ac-user-dictionary` and dictionary files specfiedi by `ac-user-dictionary-files`. Dictionary file is a word list separated with newline. User defined dictionary is shared with all buffers. Here is example adding your mail address to dictionary.
+User defined dictionary is composed of a list of string specified `ac-user-dictionary` and dictionary files specified by `ac-user-dictionary-files`. Dictionary file is a word list separated with newline. User defined dictionary is shared with all buffers. Here is example adding your mail address to dictionary.
 
     (add-to-list 'ac-user-dictionary "foobar@example.com")
 
@@ -244,32 +258,32 @@ No need to say perhaps, you can use other files as dictionary file by adding to 
 
 #### Major Mode Dictionary and Extension Dictionary ####
 
-メジャーモードや拡張子ごとに違う辞書を利用することもできます。辞書は`ac-dictionary-directories`に設定されたディレクトリから読み込まれます。`ac-dictionary-directories`は[インストール](#インストール)時に次のように設定しているはずです。
+You can use other dictionaries for every major-modes and extensions. A dictionary will loaded from a directory specified with `ac-dictionary-directories`. `ac-dictionary-directories` may be the following setting if you followed [installation](#Installation) instructions.
 
     (add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
 
-このディレクトリにはc++-modeのようなメジャーモードのための辞書ファイルやtxtのような拡張子のための辞書ファイルが格納されています。例えば`a.cpp`というバッファで辞書による補完を利用する場合、上記の設定を前提にすれば、`~/.emacs.d/ac-dict/c++-mode`と`~/.emacs.d/ac-dict/cpp`から辞書が読み込まれます。ユーザーはこれらの辞書ファイルを変更することができますし、また新しく追加することもできます。さらに、同様の構成のディレクトリを作成して`ac-dictionary-directories`に追加することで、辞書ファイルを追加することも可能です。この際、`ac-dictionary-directories`の先頭にあるディレクトリが優先されることに気をつけてください。
+A dictionary named `c++-mode` for specific major-mode and a dictionary named `txt` for specific extension will be stored in the directory. For instance, you complete in a buffer named `a.cpp` with dictionary completion, following the setting above, `~/.emacs.d/ac-dict/c++-mode` and `~/.emacs.d/ac-dict/cpp` will be loaded as dictionary file. You can edit the dictionary files and make a new one. In addition, you can add a new dictionary file to a directory that has same configuration.
 
-ユーザー定義辞書と同様、辞書の追加・編集後は`M-x ac-clear-dictionary-cache`でキャッシュを消去してください。
+As same as user defined dictionary, after editing and adding dictionary, you should do `M-x ac-clear-dictionary-cache` to apply changes.
 
-情報源
+Source
 ------
 
-`auto-complete-mode`の拡張性を保証しているのがこの情報源という概念です。*情報源*とは簡単に言えば、下記する事柄をひとまとめに記述したものと言えます。
+*Source* is a concept that insures a extensibility of `auto-complete-mode`. Simply saying, source is a description about:
 
-* どのような補完候補を生成するか
-* どのように補完するか
-* どのように表示するか
+* How to generate completion candidates
+* How to complete
+* How to show
 
-Emacs Lispについて若干の知識があれば誰でも簡単に情報源を定義することができます。情報源の定義に関しては[拡張方法](#拡張方法)を参照してください。ここでは情報源の利用方法と標準添付されている情報源について説明します。
+Anybody who know about Emacs Lisp a little can define a source easily. See [extend](#Extend) for how to define a source. Here we can explain how to use builtin sources.
 
-情報源の名前は`ac-source-`で始まる慣習となっています。そのため`apropos`を使ってどのような情報源が定義されているか調べることができます（`M-x apropos RET ^ac-source-`)。`ac-source-filename`や`ac-source-dictionary`などが見付かると思いますが、これらが情報源と呼ばれる実体になっています。
+Usually a name of source starts with `ac-source-`. So you can list up sources with `apropos` (`M-x apropos RET ^ac-source-`). You may see `ac-source-filename` and `ac-source-dictionary` which are entities of sources.
 
-### 情報源を利用する ###
+### Using Source ###
 
-`.emacs`に`(ac-config-default)`を記述している場合、デフォルトで最適な設定が使われるので、おそらく情報源の設定を変更するケースはまれだと思いますが、一応簡単に触れておきます。情報源は`ac-sources`という変数にリストとして設定されます。インストール直後に\*scracth*で`ac-sources`を評価すると次のような結果になると思います。
+If you wrote `(ac-config-default)` in your `.emacs`, it is rare to change a source setting because it is already optimized to use. Here is a short explanation about source however. Sources will be used by setting `ac-sources` to a list of sources. You can see the setting by evaluating `ac-sources` in \*scratch\* buffer:
 
-    ;; 整形済み
+    ;; Formatted
     (ac-source-filename
      ac-source-functions
      ac-source-yasnippet
@@ -280,382 +294,435 @@ Emacs Lispについて若干の知識があれば誰でも簡単に情報源を�
      ac-source-words-in-same-mode-buffers
      ac-source-dictionary)
 
-見てのとおり、\*scratch\*バッファの`ac-sources`には6つの情報源が設定されていることがわかります。それぞれの説明は後述しますが、大体の意味は推測できるでしょう。大事なことなので記憶しておいてほしいのですが、`ac-sources`はバッファーローカル変数になっており、バッファごとに独立した設定を許可しています。つまりあるバッファで`ac-sources`を変更しても、他のバッファには影響がないことになります。
+As you see, `ac-sources` in \*scratch\* buffer has six sources. We explain each source for detail, you can guess meanings of sources. It is worth to remember that `ac-sources` is a buffer local variable, which means each `ac-sources` for buffers will be different.
 
-例を示します。今、\*scratch\*バッファにいると考えてください。上記のように、このバッファには多くの情報源が設定されています。多機能すぎると感じるユーザーもいるでしょう。そこで、もう少し機能を制限するために`ac-sources`の変更を考えます。変更方法は簡単で、次のようなコードを\*scratch\*バッファあるいは`M-:`で評価するだけです。
+Here is an example. Think you are at \*scratch\* buffer. As we said, this buffer has many sources. Some people think it is too many. So try to change `ac-sources` to reduce functionalities. It is easy to change. Just evaluate the following code in \*scratch\* buffer or with `M-:`:
 
     (setq ac-sources '(ac-source-symbols ac-source-words-in-same-mode-buffers))
 
-この例では、`ac-sources`を減らして、シンボル補完と同一メジャーモード間での単語補完のみを有効にしました。さて、これを次のEmacsの起動時にも有効にするにはどうしたらよいのでしょうか。\*scratch\*バッファ作成時に`emacs-lisp-mode-hook`というフックが実行されるので、このフックに適当な関数を追加するのがよいでしょう。
+This example changes `ac-source` setting and enable only symbol completion and word completion among same major modes. Then, how can we enable this setting in next Emacs launching? We can change settings by adding a hook which is called when \*scratch\* buffer is created.
 
     (defun my-ac-emacs-lisp-mode ()
       (setq ac-sources '(ac-source-symbols ac-source-words-in-same-mode-buffers)))
     
     (add-hook 'emacs-lisp-mode-hook 'my-ac-emacs-lisp-mode)
 
-`.emacs`に`(ac-config-default)`が記述されている場合は、上記の方法では正しく動作しないかもしれません。というのも`(ac-config-default)`内部で同様のことを行っているので、どちらかが設定を上書きしてしまうからです。その場合は`(ac-config-default)`で利用する関数を再定義してしまうのがよいでしょう。`emacs-lisp-mode`の場合は、その関数名は`ac-emacs-lisp-mode-setup`です。詳しくは`auto-complete-config.el`を参照してください。
+If a code `(ac-config-default)` is written in `.emacs`, the code above may not be worked correctly. It is because of `(ac-config-default)` will overwrite the setting. In such case, you can redefine a function which is used in `(ac-config-default)`. The function name is `ac-emacs-lisp-mode-setup` in `emacs-lisp-mode`. See `auto-complete-config.el` for more details.
 
     (defun ac-emacs-lisp-mode-setup ()
       (setq ac-sources '(ac-source-symbols ac-source-words-in-same-mode-buffers)))
 
-さて、これで特定のメジャーモードで情報源を変更する方法が分かったと思います。まとめると次のようになるでしょう。
+So, now you know how to change sources in a specific major mode. Summary is:
 
-1. `ac-sources`を変更する関数を定義する
-2. `add-hook`で適当なモードフックにその関数を登録する（`c++-mode-hook`, `ruby-mode-hook`, `python-mode-hook`など）
+1. Define a function changing `ac-sources`
+2. Register the function to proper mode hooks (`c++-mode-hook`, `ruby-mode-hook`, and `python-mode-hook`, etc)
 
-では、全てのバッファに対して`ac-sources`を設定するにはどうしたらよいのでしょうか。その場合は`setq`ではなく`setq-default`で`ac-sources`を設定します。そうするとバッファローカル変数である`ac-sources`のデフォルト値が設定した値になります。
+By the way, how can we change a setting for all buffers? We use `setq-default` to change `ac-sources` instead of `setq` in such case. Then the default value of `ac-sources` will be changed to the value you specified.
 
     (setq-default ac-sources '(ac-source-words-in-all-buffer))
 
-他にも方法があります。`(ac-config-default)`は`auto-complete-mode`のフックである`auto-complete-mode-hook`に関数を追加することにより、`setq-default`によるデフォルト値の変更に近いことをやっています。その関数は`ac-common-setup`であり、`ac-sources`の先頭に`ac-source-filename`という情報源を追加しています。これにより`auto-complete-mode`が有効な全てのバッファで`ac-source-filename`が情報源の先頭に追加されます。なぜ先頭なのかというと、これにはオムニ補完の仕様が関係しているのですが、とりあえずここでは気にしなくてもいいです。つまるところ、`(ac-config-default)`を使っていて共通して`ac-sources`を変更したい場合は、この`ac-common-setup`関数を再定義することも一つの手段となります。
+There is other ways to do that. `(ac-config-default)` changes the default value of `ac-sources` by registering a hook for `auto-complete-mode`. The registered function is `ac-common-setup` that adds `ac-source-filename` to the first of `ac-sources` by default. So all `auto-complete-mode` enabled buffer will have `ac-source-filename` at the first of `ac-sources`. A reason why adding to the first is relating to [omni completion](#Omni_Completion). Anyway you don't care about it here. So if you want to change `ac-sources` of all buffer, you can redefine `ac-common-setup` function to do that.
 
-    ;; 全てのバッファの`ac-sources`の末尾に辞書情報源を追加
+    ;; Add ac-source-dictionary to ac-sources of all buffer
     (defun ac-common-setup ()
       (setq ac-sources (append ac-sources '(ac-source-dictionary))))
 
-### 標準情報源 ###
+### Builtin Sources ###
 
-`auto-complete.el`および`auto-complete-config.el`に定義されている情報源の一覧です。
+Here are defined sources in `auto-complete.el` and `auto-complete-config.el`.
 
 #### `ac-source-abbrev` ####
 
-Emacsの略語機能のための情報源です。略語機能に関しては`info emacs Abbrevs`を参照してください。
+A source for Emacs abbreviation function. See `info emacs Abbrevs` about abbreviation function.
 
 #### `ac-source-dictionary` ####
 
-辞書のための情報源です。辞書に関しては[辞書による補完](#辞書による補完)を参照してください。
+A source for dictionary. See [completion by dictionary](#Completion_by_Dictionary) about dictionary.
 
 #### `ac-source-eclim` ####
 
-[Emacs-eclim](http://github.com/senny/emacs-eclim)のための情報源です。
+A source for [Emacs-eclim](http://github.com/senny/emacs-eclim).
 
 #### `ac-source-features` ####
 
-`(require '`で有効なfeatureを補完するための情報源です。
+A source for completing features which are available with `(require '`.
 
 #### `ac-source-filename` ####
 
-ファイル名を補完するための情報源です。`/`を入力した時点で補完が開始されます。
+A source for completing file name. Completion will be started after inserting `/`.
 
 #### `ac-source-files-in-current-dir` ####
 
-カレントディレクトリのファイルを補完するための情報源です。`eshell`などで便利かもしれません。
+A source for completing files in a current directory. It may be useful with `eshell`.
 
 #### `ac-source-functions` ####
 
-Emacs Lispの関数を補完するための情報源です。`(`の直後で有効です。
+A source for completing Emacs Lisp functions. It is available only after `(`.
 
 #### `ac-source-gtags` ####
 
-[Global](http://www.tamacom.com/global.html)のタグを補完するための情報源です。
+A source for completing tags of [Global](http://www.tamacom.com/global.html).
 
 #### `ac-source-imenu` ####
 
-`imenu`ノードを補完するための情報源です。詳しくは`info emacs imenu`を参照してください。
+A source for completing `imenu` nodes. See `info emacs imenu` for details.
 
 #### `ac-source-semantic` ####
 
-[Semantic](http://cedet.sourceforge.net/semantic.shtml)のための情報源です。C/C++でメンバー名補完として利用できます。
+A source for [Semantic](http://cedet.sourceforge.net/semantic.shtml). It can be used for completing member name for C/C++.
 
 #### `ac-source-symbols` ####
 
-Emacs Lispのシンボルを補完するための情報源です。
+A source for completing Emacs Lisp symbols.
 
 #### `ac-source-variables` ####
 
-Emacs Lispの変数を補完するための情報源です。
+A source for completing Emacs Lisp symbols.
 
 #### `ac-source-words-in-all-buffer` ####
 
-全てのバッファの単語を補完するための情報源です。[`ac-source-words-in-same-mode-buffers`](#ac-source-words-in-same-mode-buffers)と違って、メジャーモードを考慮しません。
+A source for completing words in all buffer. Unlikely [`ac-source-words-in-same-mode-buffers`](#), it doesn't regard major-mode.
 
 #### `ac-source-words-in-buffer` ####
 
-現在のバッファの単語を補完するための情報源です。
+A source for completing words in a current buffer.
 
 #### `ac-source-words-in-same-mode-buffers` ####
 
-現在のバッファと同じメジャーモードの全てのバッファの単語を補完するための情報源です。例えば`a.cpp`と`b.cpp`では単語が共有されますが、`a.pl`と`b.cpp`ではメジャーモードが異なるので単語が共有されません。通常は[`ac-source-words-in-all-buffer`](#ac-source-words-in-all-buffer)よりこちらのほうが使い勝手がよいでしょう。
+A source for completing words which are collected over buffers whom major-mode is same to of a current buffer. For example, words will shared among `a.cpp` and `b.cpp`, but not shared among `a.pl` and `b.cpp` because they are different major-mode buffers. Usually this source is more useful than [`ac-source-words-in-all-buffer`](#).
 
 #### `ac-source-yasnippet` ####
 
-[Yasnippet](http://code.google.com/p/yasnippet/)のスニペットを補完・展開するための情報源です。
+A source for [Yasnippet](http://code.google.com/p/yasnippet/) to complete and expand snippets.
 
 Tips
 ----
 
-### 自動的に補完しない ###
+### Not to complete automatically ###
 
-補完メニューが現われたり消えたりすると、編集操作に集中できないというユーザーがいます。私の経験では得てしてEmacsの上級ユーザーなのですが、とにかく`auto-complete-mode`はそのような用途も想定しています。次のように`ac-auto-start`をnilにすることにより自動的に補完されなくなります。
+If you are being annoyed with displaying completion menu, you can disable automatic starting completion by setting `ac-auto-start` to `nil`.
 
     (setq ac-auto-start nil)
 
-この際、`auto-complete`コマンドを何らかのキーに割り当ておくべきです（じゃないと補完できないので）。例えば次のように`ac-mode-map`（`auto-complete-mode`が有効なバッファで利用できるキーマップ）に割り当てたり、
+You need to bind some key to `auto-complete` command (because you need to complete anyway). For example, bind to `ac-mode-map`, which is a key map for `auto-complete-mode` enabled buffer:
 
     (define-key ac-mode-map (kbd "M-TAB") 'auto-complete)
 
-あるいはグローバルキーマップに割り当てるのもよいでしょう。
+Or bind to global key map.
 
     (global-set-key "\M-/" 'auto-complete)
 
-また、自動的に補完してもいいけど、もう少し長い単語のときだけ補完を開始するということも可能です。例えば4文字以上の単語のときに補完を開始するには`ac-auto-start`に4を設定します。
+In addition, if you allow to start completion automatically but also want to be silent as much as possible, you can do it by setting `ac-auto-start` to an prefix length integer. For example, if you want to start completion automatically when you has inserted 4 or more characters, just set `ac-auto-start` to 4:
 
     (setq ac-auto-start 4)
 
-`ac-auto-start`を大きめの数値に設定するのはパフォーマンスに良い影響をもたらします。`ac-auto-start`が小さい数値だと、必然的に補完候補数が増えるので、それだけ補完候補の生成にかかるコストが大きくなります。もし`auto-complete-mode`が重いと感じるなら`ac-auto-start`に大きめの数値を設定するか`nil`を設定するとよいでしょう。
+Setting `ac-auto-start` to large number will result in good for performance. Lesser `ac-auto-start`, more high cost to produce completion candidates, because there will be so many candidates necessarily. If you feel `auto-complete-mode` is stalling, change `ac-auto-start` to a larger number or `nil`.
 
-`ac-auto-start`に関しては[`ac-auto-start`](#ac-auto-start)を参照してください。
+See [`ac-auto-start`](#) for more details.
 
-また[トリガーキー](#トリガーキー)を利用も考慮してみてください。
+And consider to use [trigger key](#Trigger_Key).
 
-### 補完メニューを自動で表示しない ###
+### Not to show completion menu automatically ###
 
-補完メニューによって集中力が削がれる問題のもう一つの対処としては、補完メニューを表示しないという方法が考えられます。正直なところを言うと、補完メニューを表示しないをデフォルトにしたいのですが、`auto-complete-mode`の補完推測の精度がまだあまり良くないので、現状ではデフォルトで補完メニューを表示するようになっています。補完推測の精度が向上すればインライン補完のみで事足りるので、わざわざ補完メニューを表示する必要はないのです。補完メニューを非表示にするには`ac-auto-show-menu`を`nil`にします。
+There is another approach to solve the annoying problem is that not to show completion menu automatically. Not to show completion menu automatically, set [`ac-auto-show-menu`](#) to `nil`.
 
     (setq ac-auto-show-menu nil)
 
-これで補完メニューは自動で表示されなくなりますが、補完候補の選択や絞り込みを行うと補完メニューは表示されます。
+When you select or filter candidates, completion menu will be shown.
 
-あるいは補完メニューの表示を遅延させることにより、補完メニューが必要な時だけ自動で表示させるようにすることも可能です。そのためには`ac-auto-show-menu`に実数で遅延する時間を秒単位で設定します。
+In other way, you can delay showing completion menu by setting `ac-auto-show-menu` to seconds in real number.
 
-    ;; 0.8秒後に自動で表示
+    ;; Show 0.8 second later
     (setq ac-auto-show-menu 0.8)
 
-このインターフェースはデフォルトの完全自動補完と上記した非自動補完のよいところだけを組合せたものと言えます。将来はこれがデフォルトになるかもしれません。
+This interface has both good points of completely automatic completion and completely non-automatic completion. This may be default in the future.
 
-### 補完を中止する ###
+### Stop completion ###
 
-補完の中止は`C-g`で行うことができますが、マクロ定義中などは`C-g`したくないでしょう。そのような場合は`ac-completing-map`に補完を中止するキーを割り当てるとよいでしょう。
+You can stop completion by pressing `C-g`. However you won't press `C-g` while defining a macro. In such case, it is a good idea to bind some key to `ac-completing-map`.
 
     (define-key ac-completing-map "\M-/" 'ac-stop)
 
-これで補完中でも`M-/`で中止することができます。
+Now you can stop completion by pressing `M-/`.
 
-### TABで補完を完了する ###
+### Finish completion by TAB ###
 
-上記したようにTABには様々な挙動が定義されています。`auto-complete-mode`を正しく使いこなすにはTABとRETによる補完を使いわけなければなりませんが、RETはそのまま改行でTABで補完完了するといった単純な操作方法も十分考えられます。。そのような場合は次のように設定します。
+As we described above, there is many behaviors in TAB. You need to use TAB and RET properly, but there is a simple interface that bind RET to original and TAB to finish completion:
 
     (define-key ac-completing-map "\t" 'ac-complete)
     (define-key ac-completing-map "\r" nil)
 
-### クイックヘルプを利用しない ###
+### Not to use quick help ###
 
-補完中に1秒ほど待ったときに出てくるツールチップヘルプをクイックヘルプと呼んでいますが、これを利用したくない場合は次のように設定します。
+A tooltip help that is shown when completing is called quick help. You can disable it if you don't want to use it:
 
     (setq ac-use-quick-help nil)
 
-### 補完メニューの高さを変更する ###
+### Change a height of completion menu ###
 
-`ac-menu-height`に行数を設定します。
+Set `ac-menu-height` to number of lines.
 
-    ;; 20行分表示
+    ;; 20 lines
     (setq ac-menu-height 20)
 
-### 特定のモードで自動で`auto-complete-mode`を有効にする ###
+### Enable `auto-complete-mode` automatically for specific modes ###
 
-`ac-modes`に設定されていないモードでは自動で`auto-complete-mode`が有効になりません。適宜設定してください。
+`auto-complete-mode` won't be enabled automatically for modes that are not in `ac-modes`. So you need to set if necessary:
 
     (add-to-list 'ac-modes 'brandnew-mode)
 
-### 大文字・小文字を区別したい/したくない ###
+### Ignore case ###
 
-大文字・小文字の区別方法を設定するには`ac-ignore-case`に次のように設定します。
+There is three ways to distinguish upper case and lower case.
 
-    ;; 大文字・小文字を区別しない
+    ;; Just ignore case
     (setq ac-ignore-case t)
-    ;; 補完対象に大文字が含まれる場合のみ区別する
+    ;; Ignore case if completion target string doesn't include upper characters
     (setq ac-ignore-case 'smart)
-    ;; 大文字・小文字を区別する
+    ;; Distinguish case
     (setq ac-ignore-case nil)
 
-デフォルトは`smart`です。
+Default is `smart`.
 
-### 色を変更する ###
+### Stop completion automatically after inserting specific words ###
 
-色の設定はそれぞれ次のようになっています。
+Set `ac-ignores` to words that stops completion automatically. In ruby, some people want to stop completion automatically after inserting "end":
 
-| フェイス名           | 説明                   |
-|----------------------|------------------------|
-| `ac-completion-face` | インライン補完の文字色 |
-| `ac-candidate-face`  | 補完メニューの背景色   |
-| `ac-selection-face`  | 補完メニューの選択色   |
+    (add-hook 'ruby-mode-hook
+              (lambda ()
+                (make-local-variable 'ac-ignores)
+                (add-to-list 'ac-ignores "end")))
 
-フェイスの背景色を変更するには`set-face-background`、前景色を変更するには`set-face-foreground`、下線の設定には`set-face-underline`を使います。
+Note that `ac-ignores` is not a buffer local variable, so you need to make it buffer local with `make-local-variable` if it is buffer specific setting.
 
-    ;; 設定例
+### Change colors ###
+
+Colors settings are following:
+
+| Face                 | Description                           |
+|----------------------|---------------------------------------|
+| `ac-completion-face` | Foreground color of inline completion |
+| `ac-candidate-face`  | Color of completion menu              |
+| `ac-selection-face`  | Selection color of completion menu    |
+
+To change face background color, use `set-face-background`. To change face foreground color, use `set-face-foreground`. To set underline, use `set-face-underline`.
+
+    ;; Examples
     (set-face-background 'ac-candidate-face "lightgray")
     (set-face-underline 'ac-candidate-face "darkgray")
     (set-face-background 'ac-selection-face "steelblue")
 
-### デフォルトの情報源を変更する ###
+### Change default sources ###
 
-情報源について分からない場合は最初に[情報源](#情報源)を参照してください。デフォルトの情報源（全てのバッファに共通）を変更するには`setq-default`を使います。
+Read [source](#Source) first if you don't familiar with sources. To change default of sources, use `setq-default`:
 
     (setq-default ac-sources '(ac-source-words-in-all-buffer))
 
-### 特定のメジャーモードで情報源を変更する ###
+### Change sources for specific major modes ###
 
-例えばC++のバッファでは特定の情報源を利用したいということがあるでしょう。その場合は`add-hook`でフックを登録して、適宜`ac-sources`を変更するにようします。
+For example, you may want to use specific sources for C++ buffers. To do that, register a hook by `add-hook` and change `ac-sources` properly:
 
     (add-hook 'c++-mode (lambda () (add-to-list 'ac-sources 'ac-source-semantic)))
 
+### Completion with specific source ###
 
+You can start completion with specific source. For example, if you want to complete file name, do `M-x ac-complete-filename` at point. Or if you want to complete C/C++ member name, do `M-x ac-complete-semantic` at point. Usually, you may bind them to some key like:
 
-設定項目
---------
+    ;; Complete member name by C-c . for C++ mode.
+    (add-hook 'c++-mode-hook
+              (lambda ()
+                (local-set-key (kbd "C-c .") 'ac-complete-semantic)))
+    ;; Complete file name by C-c /
+    (global-set-key (kbd "C-c /") 'ac-complete-filename)
 
-それぞれの設定項目は`.emacs`で変更するか`M-x customize-group RET auto-complete RET`で変更可能です。
+Generally, such commands will be automatically available when sources are defined. Assume that a source named `ac-source-foobar` is being defined for example, a command called `ac-complete-foobar` will be also defined automatically. See also [builtin sources](#Builtin_Sources) for available commands.
+
+If you want to use multiple sources for a command, you need to define a command for it like:
+
+    (defun semantic-and-gtags-complete ()
+      (interactive)
+      (auto-complete '(ac-source-semantic ac-source-gtags)))
+
+`auto-complete` function can take an alternative of `ac-sources`.
+
+### Show help persistently ###
+
+Use `ac-persist-help` instead of `ac-help`, which is bound to `M-<f1>` and `C-M-?`.
+
+### Show a lastly completed candidate help ###
+
+`ac-last-help` command shows a lastly completed candidate help in a `ac-help` (buffer help) form. If you give an argument by `C-u` or just call `ac-last-persist-help`, its help buffer will not disappear automatically.
+
+`ac-last-quick-help` command show a lastly completed candidate help in a `ac-quick-help` (quick help) form. It is useful if you want to see a function documentation, for example.
+
+You may bind keys to these command like:
+
+    (define-key ac-mode-map (kbd "C-c h") 'ac-last-quick-help)
+    (define-key ac-mode-map (kbd "C-c H") 'ac-last-help)
+
+Configuration
+-------------
+
+Any configuration item will be set in `.emacs` or with `M-x customize-group RET auto-complete RET`.
 
 ### `ac-delay` ###
 
-補完可能になるまでの遅延時間（秒）を実数で指定します。小さいほど瞬時に反応しますが、パフォーマンスの低下につながります。
+Delay time to start completion in real number seconds. It is a trade off of responsibility and performance.
 
 ### `ac-auto-show-menu` ###
 
-補完時に自動的に補完メニューを表示するかどうかです。`t`の場合は常に自動的に表示します。`nil`の場合は絶対に表示されません。実数を指定すると表示までの遅延時間を秒数で指定できます。
+Show completion menu automatically if `t` specified. `t` means always automatically showing completion menu. `nil` means never showing completion menu. Real number means delay time in seconds.
 
 ### `ac-use-fuzzy` ###
 
-[曖昧マッチによる補完](#曖昧マッチによる補完)を利用するかどうかです。
+Whether or not to use [fuzzy matching](#Completion_by_Fuzzy_Matching).
 
 ### `ac-fuzzy-cursor-color` ###
 
-[曖昧マッチによる補完](#曖昧マッチによる補完)時にカーソルの指定した色に変更します。`nil`の場合は変更しません。利用できる色は`M-x list-colors-display`で確認できます。
+Change cursor color to specified color when [fuzzy matching](#Completion_by_Fuzzy_Matching) is started. `nil` means never changed. Available colors can be seen with `M-x list-colors-display`.
 
 ### `ac-use-comphist` ###
 
-[補完推測機能](#補完推測機能)を利用するかどうかです。`nil`にすると利用しませんが、パフォーマンスが向上する可能性があります。
+Whether or not to use [candidate suggestion](#Candidate_Suggestion). `nil` means never using it and get performance better maybe.
 
 ### `ac-comphist-threshold` ###
 
-低いスコアの補完候補を排除する閾値をパーセンテージで指定します。スコアの全体を100%とします。
+Specify a percentage of limiting lower scored candidates. 100% for whole scores.
 
 ### `ac-comphist-file` ###
 
-[補完推測機能](#補完推測機能)のデータを永続化するファイルを指定します。
+Specify a file stores data of [candidate suggestion](#Candidate_Suggestion).
 
 ### `ac-use-quick-help` ###
 
-クイックヘルプを利用するかどうかです。
+Whether or not to use quick help.
+
+### `ac-quick-help-delay` ###
+
+Delay time to show quick help in real number seconds.
 
 ### `ac-menu-height` ###
 
-補完メニューの行数を整数で指定します。
+Specify an integer of lines of completion menu.
 
 ### `ac-quick-help-height` ###
 
-クイックヘルプの行数を整数で指定します。
+Specify an integer of lines of quick help.
 
 ### `ac-candidate-limit` ###
 
-補完候補数を制限します。整数が指定されている場合は、その値を表示する補完候補数の上限にします。`nil`の場合は無制限です。
+Limit a number of candidates. Specifying an integer, the value will be a limit of candidates. `nil` means no limit.
 
 ### `ac-modes` ###
 
-`global-auto-complete-mode`が有効な時に`auto-complete-mode`が自動的に有効になるモードをシンボルのリストで指定します。
+Specify major modes as a list of symbols that will be enabled automatically if `global-auto-complete-mode` is enabled.
 
 ### `ac-compatible-packages-regexp` ###
 
-自動補完を開始するコマンドのパッケージを正規表現で指定します。
+Specify a regexp that identifies starting completion or not for that package.
 
 ### `ac-trigger-commands` ###
 
-自動補完を開始するコマンドをシンボルのリストで指定します。`self-insert-command`がデフォルトですが、まれに文字の挿入を独自のコマンドに設定しているモードがあるので、その対応のための設定項目です。
+Specify commands as a list of symbols that starts completion automatically. `self-insert-command` is one of default.
 
 ### `ac-trigger-commands-on-completing` ###
 
-[`ac-trigger-commands`](#ac-trigger-commands)と同様ですが、補完中に使用される点が異なります。
+Same as [`ac-trigger-commands`](#) expect this will be used on completing.
 
 ### `ac-trigger-key` ###
 
-[トリガーキー](#トリガーキー)を指定します。
+Specify a [trigger key](#Trigger_Key).
 
 ### `ac-auto-start` ###
 
-補完が自動的に開始されるかどうかを指定します。`t`の場合は常に自動的に開始されます。`nil`の場合は絶対に自動的に開始されません。整数の場合は、補完対象文字列の長さがその値以上になるまで自動的に開始されません。
+Specify how completion will be started. `t` means always starting completion automatically. `nil` means never started automatically. An integer means completion will not be started until the value is more than a length of the completion target string.
 
 ### `ac-ignores` ###
 
-補完しない文字列を文字列のリストで指定します。
+Specify a list of strings that stops completion.
 
 ### `ac-ignore-case` ###
 
-補完時に大文字・小文字を区別するかどうかです。`t`の場合は常に無視します。`nil`の場合は無視しません。シンボルで`smart`が指定された場合は、補完対象文字列に大文字が含まれる場合のみ区別します。
+Specify how distinguish case. `t` means always ignoring case. `nil` means never ignoring case. `smart` in symbol means ignoring case only when the completion target string doesn't include upper characters.
 
 ### `ac-dwim` ###
 
-"Do What I Mean"機能です。`t`の場合は次の挙動になります。
+"Do What I Mean" function. `t` means:
 
-* 補完選択時にTABがRETの挙動に変化する
-* 補完候補が一つしかないときにTABをするとRETの挙動になる
+* After selecting candidates, TAB will behave as RET
+* TAB will behave as RET only on candidate remains
+
+### `ac-use-overriding-local-map` ###
+
+Use only when operations is not affected. Internally it uses `overriding-local-map`, which is too powerful to use with keeping orthogonality. So don't use as much as possible.
 
 ### `ac-completion-face` ###
 
-インライン補完のためのフェイスです。
+Face of inline completion.
 
 ### `ac-candidate-face` ###
 
-補完候補の背景のためのフェイスです。
+Face of completion menu background.
 
 ### `ac-selection-face` ###
 
-選択された補完候補のフェイスです。
+Face of completion menu selection.
 
 ### `global-auto-complete-mode` ###
 
-グローバルに`auto-complete-mode`を利用するかどうかです。
+Whether or not to use `auto-complete-mode` globally. It is `t` in general.
 
 ### `ac-user-dictionary` ###
 
-[辞書による補完](#辞書による補完)のための辞書を文字列のリストで指定します。
+Specify a dictionary as a list of string for [completion by dictionary](#Completion_by_Dictionary).
 
 ### `ac-user-dictionary-files` ###
 
-[辞書による補完](#辞書による補完)のための辞書ファイルを文字列のリストで指定します。
+Specify a dictionary files as a list of string for [completion by dictionary](#Completion_by_Dictionary).
 
 ### `ac-dictionary-directories` ###
 
-[辞書による補完](#辞書による補完)のための辞書ファイルディレクトリを文字列のリストで指定します。
+Specify a dictionary directories as a list of string for [completion by dictionary](#Completion_by_Dictionary).
 
 ### `ac-sources` ###
 
-使用する[情報源](#情報源)をリストで指定します。これはバッファローカル変数です。
+Specify sources as a list of [source](#Source). This is a buffer local variable.
 
 ### `ac-completing-map` ###
 
-補完中に使用するキーマップです。
+Key map on completing.
 
 ### `ac-mode-map` ###
 
-`auto-complete-mode`が有効なバッファで使用するキーマップです。
+Key map for `auto-complete-mode` enabled buffers.
 
-拡張方法
---------
+Extend
+------
 
-`auto-complete-mode`を拡張するとはつまり[情報源](#情報源)を定義することです。この節では情報源の定義の仕方を説明します。
+A meaning to extend `auto-complete-mode` is just defining a [source](#Source). This section describe how to define a source.
 
-### 雛形 ###
+### Prototype ###
 
-情報源はおおまかに言って次のような形をとります。
+Source basically takes a form of the following:
 
     (defvar ac-source-mysource1
       '((prop . value)
         ...))
 
-見てわかる通り情報源とは単なる連想リストでしかないのです。あらかじめ定義されたプロパティ名と正しい値のペアを連想リストとして組合せるだけで情報源が定義できてしまうのです。
+As you see, source is just an associate list. You can define a source by combining pairs of defined property and its value.
 
-### 簡単な例 ###
+### Example ###
 
-情報源で一番重要なプロパティは`candidates`プロパティです。このプロパティに関数あるいは式、変数を与えることで補完候補の生成を行います。プロパティの評価結果は文字列のリストであるべきです。例として補完候補としてFoo, Bar, Bazを生成する情報源を定義してみましょう。
+The most important property for source is [`candidates`](#) property. This property describes how to generate completion candidates by giving a function, an expression, or a variable. A result of evaluation should be a list of strings. Here is an example to generate candidates "Foo", "Bar", and "Baz":
 
     (defvar ac-source-mysource1
       '((candidates . (list "Foo" "Bar" "Baz"))))
 
-次にこの情報源を`ac-sources`に設定して実際に補完してみましょう。
+Then add this source to `ac-sources` and use:
 
     (setq ac-sources '(ac-source-mysource1))
 
-Bと入力してBar, Bazが補完候補として現われれば成功です。上記の例では`candidates`プロパティに`(list ...)`という式を指定しました。ここで指定した式はバイトコンパイルされないので、よほど簡単なものでないかぎり式で指定するのはパフォーマンスの悪化をもたらします。代替策・正攻法としては関数を利用するのがよいでしょう。
+It is successful if you have "Bar" and "Baz" by inserting "B". The example above has an expression `(list ...)` in `candidates` property. The expression specified there will not be byte-compiled, so you should not use an expression unless it is too simple, because it has a bad affection on performance. You should use a function instead maybe:
 
     (defun mysource1-candidates ()
       '("Foo" "Bar" "Baz"))
@@ -663,11 +730,11 @@ Bと入力してBar, Bazが補完候補として現われれば成功です。�
     (defvar ac-source-mysource1
       '((candidates . mysource1-candidates)))
 
-`candidates`プロパティに指定した関数は引数なしで補完が更新される度に呼び出されます。その他の方法として変数を直接指定することもできます。
+The function specified in `candidates` property will be called without any arguments on every time candidates updated. There is another way: a variable.
 
-### 初期化 ###
+### Initialization ###
 
-補完が開始されたときに一度だけ初期化処理を行いたいということがあります。そのためには`init`プロパティを利用します。`candidates`プロパティ同様、引数なしの関数あるいは式を指定します。次に簡単な例を示します。
+You may want to initialize a source at first time to complete. Use `init` property in these cases. As same as `candidates` property, specify a function without any parameters or an expression. Here is an example:
 
     (defvar mysource2-cache nil)
     
@@ -678,16 +745,16 @@ Bと入力してBar, Bazが補完候補として現われれば成功です。�
       '((init . mysource2-init)
         (candidates . mysource2-cache)))
 
-この例では`mysource2-init`関数で大規模な処理を行い、`mysource2-cache`変数にその結果を保存しています。そして`candidates`プロパティにその変数を指定することで、補完が更新される度に大規模な処理が行われるのを防いでいます。この例の他にも次のような用途が考えられます。
+In this example, `mysource2-init` function does huge processing, and stores the result into `mysource2-cache` variable. Then specifying the variable in `candidates` property, this source prevents huge processing on every time update completions. There are possible usage:
 
-* `require`する
-* バッファを開いておく
+* Do `require`
+* Open buffers first of all
 
-### キャッシュ ###
+### Cache ###
 
-`auto-complete-mode`ではキャッシュの戦略が重要になります。その方法として、前節で触れた`init`プロパティによるものと、この節で説明する`cache`プロパティによるものが基本となります。情報源の定義に`cache`プロパティを設定しておくと、初回の`candidates`プロパティの結果が内部的にキャッシュされ、それ以降は`candidates`プロパティを評価する代わりに、そのキャッシュを利用するにようになります。
+Caching strategy is important for `auto-complete-mode`. There are two major ways: `init` property and `cache` property that is described in this section. Specifying `cache` property in source definition, a result of evaluation of `candidates` property will be cached and reused the result as the result of evaluation of `candidates` property next time.
 
-前節の例を`cache`プロパティを利用して書き直してみます。
+Rewrite the example in previous section by using `cache` property.
 
     (defun mysource2-candidates ()
       '("Huge" "Processing" "Is" "Done" "Here"))
@@ -696,13 +763,13 @@ Bと入力してBar, Bazが補完候補として現われれば成功です。�
       '((candidates . mysource2-candidates)
         (cache)))
 
-`candidates`プロパティに大規模な処理が必要な関数が指定されていますが、初回のみ実行されるのでパフォーマンスの問題は軽減されます。
+There is no performance problem because this source has `cache` property even if `candidates` property will do huge processing.
 
-#### キャッシュの寿命 ####
+#### Cache Expiration ####
 
-`init`プロパティや`cache`プロパティの大きいスコープでキャッシュを保持することがあります。例えば滅多に変更のない関数名のリストなどがそうです。その場合にパフォーマンスを犠牲にすることなく、適度にキャッシュをクリアするにはどうすればよいのでしょうか。`auto-complete-mode`はキャッシュの寿命を管理する機構を持っており、ユーザーはそこにキャッシュ用の変数を登録しておくことにより、適当なイベントごとにキャッシュがクリアされます。
+It is possible to keep among more wider scope than `init` property and `cache` property. It may be useful for remembering all function names which is rarely changed. In these cases, how can we clear cache property not at the expense of performance? This is true time use that functionality.
 
-バッファが保存されるたびにキャッシュをクリアするには`ac-clear-variable-after-save`で変数を登録します。簡単な例を示します。
+Use `ac-clear-variable-after-save` to clear cache every time a buffer saved. Here is an example:
 
     (defvar mysource3-cache nil)
     
@@ -715,19 +782,19 @@ Bと入力してBar, Bazが補完候補として現われれば成功です。�
     (defvar ac-source-mysource3
       '((candidates . mysource3-candidates)))
 
-これを`ac-sources`に設定してTimeで補完を行ってください。すると補完候補に補完時の時間が表示されると思います。二度目以降も同じ時間が表示されるのは`mysource3-candidates`は可能な限りキャッシュを返すようになっているからです。それでは一度そのバッファを保存して、再びTimeで補完を行ってください。今度は新しい時間に更新されたと思います。この情報源のキモは`ac-clear-variable-after-save`でキャッシュ用変数を登録しているところにあります。標準の情報源である`ac-source-words-in-same-mode-buffer`などもこの機能を利用しています。
+Add this source to `ac-sources` and complete with "Time". You may see a time when completion has been started. After that, you also see the same time, because `mysource3-candidates` returns the cache as much as possible. Then, save the buffer once and complete with "Time" again. In this time, you may find a new time. An essence of this source is to use `ac-clear-variable-after-save` to manage a variable for cache.
 
-さらに定期的にキャッシュをクリアすることも可能です。そのためには`ac-clear-variable-every-minute`で変数を登録します。使い方は`ac-clear-variable-after-save`と同じですが、一分ごとに定期的にキャッシュがクリアされる点が異なります。標準の情報源である`ac-source-functions`などがこの機能を利用しています。
+It is also possible to clear cache periodically. Use `ac-clear-variable-every-minute` to do that. A way to use is same to `ac-clear-variable-after-save` except its cache will be cleared every minutes. A builtin source `ac-source-functions` uses this functionality.
 
-### アクション ###
+### Action ###
 
-[RETによる補完](#RETによる補完)の場合、`action`プロパティで指定された関数あるいは式が評価されます。標準情報源では`ac-source-abbrev`や`ac-source-yasnippet`が利用しています。
+[Complete by RET](#) will evaluate a function or an expression specified in `action` property. A builtin sources `ac-source-abbrev` and `ac-source-yasnippet` use this property.
 
-### オムニ補完 ###
+### Omni Completion ###
 
-オムニ補完とは現在編集中のコンテキストを考慮して行う補完のことです。スラッシュを検出して行うファイル名補完や、ドットを検出して行うC/C++のメンバー補完は、このオムニ補完であると言えます。情報源をオムニ補完に対応させるには`prefix`プロパティを使います。`prefix`プロパティは補完対象文字列の開始位置をポイントで返さなければなりません。`nil`を返した場合は、その情報源が現在のコンテキストでは無効であると解釈します。
+*Omni Completion* is a type of completion which regards of a context of editing. A file name completion which completes with slashed detected and a member name completion in C/C++ with dots detected are omni completions. To make a source support for omni completion, use `prefix` property. A result of evaluation of `prefix` property must be a beginning point of completion target string. Retuning `nil` means the source is disabled within the context.
 
-例として`To: `の後にメールアドレスを補完する情報源を考えてみましょう。まず、これまでの知識からメールアドレスを補完する情報源を定義します。
+Consider a source that completes mail addresses only after "To: ". First of all, define a mail address completion source as same as above.
 
     (defvar ac-source-to-mailaddr
       '((candidates . (list "foo1@example.com"
@@ -736,17 +803,17 @@ Bと入力してBar, Bazが補完候補として現われれば成功です。�
     
     (setq ac-sources '(ac-source-to-mailaddr))
 
-ここまでは簡単です。次に`prefix`プロパティを使って`To: `の後にのみ補完が開始されるようにします。`prefix`プロパティには次の三つが指定できます。
+Then enable completions only after "To: " by using `prefix` property. `prefix` property must be one of:
 
-* 正規表現
-* 関数
-* 式
+* Regexp
+* Function
+* Expression
 
-正規表現を指定した場合、その正規表現を使って`re-search-backward`を行い[^1]、マッチしたグループ1あるいはグループ0の先頭位置を補完対象文字列の開始位置とします。もう少し複雑な制御が必要な場合は関数あるいは式を指定します。ここで評価された開始位置は[`ac-point`](#ac-point)に格納されます。先の例では次の正規表現で事足ります。
+Specifying a regexp, `auto-complete-mode` thinks of a point of start of group 1 or group 0 as a beginning point of completion target string by doing `re-search-backward`[^1] with the regexp. If you want to do more complicated, use a function or an expression instead. The beginning point that is evaluated here will be stored into [`ac-point`](#). In above example, regexp is enough.
 
     ^To: \(.*\)
 
-グループ1をキャプチャしているのは`To: `を補完対象文字列に含めないためです。これを`prefix`プロパティに設定した最終的な情報源は次のようになります。
+A reason why capturing group 1 is skipping "To: ". By adding this into the source definition, the source looks like:
 
     (defvar ac-source-to-mailaddr
       '((candidates . (list "foo1@example.com"
@@ -754,19 +821,18 @@ Bと入力してBar, Bazが補完候補として現われれば成功です。�
                             "foo3@example.com"))
         (prefix . "^To: \\(.*\\)")))
 
-試しに`To: `と入力してみましょう。メールアドレスが補完できるようになったら成功です。
+Add this source to `ac-sources` and then type "To: ". You will be able to complete mail addresses.
 
-
-[^1]: 厳密にはその正規表現の末尾にカーソルを意味する\=を付与したもので`re-search-backward`されます
+[^1]: Strictly `re-search-backward` with the added adding `\=` at the end
 
 ### `ac-define-source` ###
 
-これまでは`defvar`で情報源を定義してきましたが、`ac-define-source`というユーティリティマクロを使って定義することも可能です。
+You may use an utility macro called `ac-define-source` which defines a source and a command.
 
     (ac-define-source mysource3
       '((candidates . (list "Foo" "Bar" "Baz"))))
 
-このマクロは次のように展開されます。
+This expression will be expanded like:
 
     (defvar ac-source-mysource3
       '((candidates . (list "Foo" "Bar" "Baz"))))
@@ -775,7 +841,7 @@ Bと入力してBar, Bazが補完候補として現われれば成功です。�
       (interactive)
       (auto-complete '(ac-source-mysource3)))
 
-`defvar`は従来通り定義され、続いてその情報源のみで補完を行うコマンドが定義されます。`auto-complete`は引数なしで呼び出された場合は`ac-sources`を情報源として使い、引数ありで呼び出された場合はその値を情報源として使います。`defvar`か`ac-define-source`かどちらを使うかは微妙ですが、後方互換性を保持するなら`defvar`のほうが無難でしょう。ちなみに標準情報源は全て`ac-define-source`で定義されています。つまり`ac-complete-filename`などを他のキーに割り当てて個別に利用することができます。
+A source will be defined as usual and in addition a command that completes with the source will be defined. Calling `auto-complete` without arguments will use `ac-sources` as default sources and with arguments will use the arguments as default sources. Considering compatibility, it is difficult to answer which you should use `defvar` and `ac-define-source`. Builtin sources are defined with `ac-define-sources`, so you can use them alone by binding some key to these commands such like `ac-complete-filename`. See also [this tips](#Completion_with_specific_source].
 
 ### Source Properties ###
 
@@ -785,15 +851,19 @@ Specify a function or an expression that is evaluated only once when completion 
 
 #### `candidates` ####
 
-Specify a function, an expression, or a variable to calculate candidates. Candidates should be a list of string. If [`cache`](#cache) property is enabled, this property will be ignored twice or later.
+Specify a function, an expression, or a variable to calculate candidates. Candidates should be a list of string. If [`cache`](#) property is enabled, this property will be ignored twice or later.
 
 #### `prefix` ####
 
-Specify a regexp, a function, or an expression to find a point of completion target string for [omni completion](#Omni Completion). This source will be ignored when `nil` returned. If a regexp is specified, a start point of group 1 or group 2 will be used as a value.
+Specify a regexp, a function, or an expression to find a point of completion target string for [omni completion](#Omni_Completion). This source will be ignored when `nil` returned. If a regexp is specified, a start point of group 1 or group 2 will be used as a value.
+
+#### `requires` ####
+
+Specify a required number of characters of completion target string. If nothing is specified, `auto-complete-mode` uses [`ac-auto-start`](#) instead.
 
 #### `action` ####
 
-Specify a function or an expression that is executed on [completion by RET](#Completion by RET).
+Specify a function or an expression that is executed on [completion by RET](#Completion_by_RET).
 
 #### `limit` ####
 
@@ -808,28 +878,29 @@ Specify a symbol of candidate meaning in one character string. The symbol will b
 | s      | Symbol           |
 | f      | Function, Method |
 | v      | Variable         |
+| c      | Constant         |
 | a      | Abbreviation     |
 | d      | Dictionary       |
 
 #### `cache` ####
 
-Use [cache](#cache).
+Use [cache](#).
 
 #### `require` ####
 
-Specify an integer or `nil`. This source will be ignored when the integer value is lager than a lengh of completion target string. `nil` means nothing ignored.
+Specify an integer or `nil`. This source will be ignored when the integer value is lager than a length of completion target string. `nil` means nothing ignored.
 
 #### `candidate-face` ####
 
-Specify a face of candidate. It overrides [`ac-candidate-face`](#ac-candidate-face) partially.
+Specify a face of candidate. It overrides [`ac-candidate-face`](#) partially.
 
 #### `selection-face` ####
 
-Specify a face of selection. It overrides [`ac-selection-face`](#ac-selection-face) partially.
+Specify a face of selection. It overrides [`ac-selection-face`](#) partially.
 
 ### Variables ###
 
-Here is a ist of often used variables.
+Here is a list of often used variables.
 
 #### `ac-buffer` ####
 
@@ -845,11 +916,57 @@ A string of completion target.
 
 #### `ac-limit` ####
 
-A limit of candidates. Its value may be one of [`ac-candidate-limit`](#ac-candidate-limit) and [`limit`](#limit) property.
+A limit of candidates. Its value may be one of [`ac-candidate-limit`](#) and [`limit`](#) property.
 
 #### `ac-candidates` ####
 
 A list of candidates.
+
+Trouble Shooting
+----------------
+
+### Response Latency ###
+
+To keep much responsibility is very important for `auto-complete-mode`. However it is well known fact that a performance is a trade off of functionalities. List up options related to the performance.
+
+#### `ac-auto-start` #### {#trouble_ac-auto-start}
+
+For a larger number, it reduces a cost of generating completion candidates. Or you can remove the cost by setting `nil` and you can use when you truly need. See [not to complete automatically](#Not_to_complete_automatically) for more details.
+
+#### `ac-delay` #### {#trouble_ac-delay}
+
+For a larger number, it reduces a cost of starting completion.
+
+#### `ac-auto-show-menu` #### {#trouble_ac-auto-show-menu}
+
+For a larger number, it reduces a displaying cost of completion menu.
+
+#### `ac-use-comphist` #### {#trouble_ac-use-comphist}
+
+Setting [`ac-use-comphist`](#) to `nil` to disable [candidate suggestion](#Candidate_Suggestion), it reduces a cost of suggestion.
+
+#### `ac-candidate-limit` #### {#trouble_ac-candidate-limit}
+
+For a property number, it reduces much computation of generating candidates.
+
+### Completion menu is disrupted ###
+
+There is two major cases.
+
+#### Column Computation Case ####
+
+`auto-complete-mode` tries to reduce a cost of computation of columns to show completion menu correctly by using a optimized function at the expense of accuracy. However, it probably causes a menu to be disrupted. Not to use the optimized function, evaluate the following code:
+
+    (setq popup-use-optimized-column-computation nil)
+
+#### Font Case ####
+
+There is a problem when render [IPA font](http://ossipedia.ipa.go.jp/ipafont/) with Xft in Ubuntu 9.10. Use [VL gothic](http://dicey.org/vlgothic/), which renders more suitably. Or disable Xft, then it can render correctly.
+
+We don't good answers now, but you may shot the troubles by changing font size with `set-face-font`. For instance, completion menu may be disrupted when displaying the menu including Japanese in NTEmacs. In such case, it is worth to try to evaluate the following code to fix it:
+
+    (set-face-font 'ac-candidate-face "MS Gothic 11")
+    (set-face-font 'ac-selection-face "MS Gothic 11")
 
 [GNU Emacs]: http://www.gnu.org/software/emacs/
 [GPLv3]: http://gplv3.fsf.org/
