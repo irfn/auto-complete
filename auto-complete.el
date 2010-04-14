@@ -4,7 +4,7 @@
 
 ;; Author: Tomohiro Matsuyama <m2ym.pub@gmail.com>
 ;; URL: http://cx4a.org/software/auto-complete
-;; Keywords: convenience
+;; Keywords: completion, convenience
 ;; Version: 1.2
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -63,7 +63,7 @@
 
 (defgroup auto-complete nil
   "Auto completion."
-  :group 'convenience
+  :group 'completion
   :prefix "ac-")
 
 (defcustom ac-delay 0.1
@@ -76,6 +76,16 @@
   :type '(choice (const :tag "Yes" t)
                  (const :tag "Never" nil)
                  (float :tag "Timer"))
+  :group 'auto-complete)
+
+(defcustom ac-disable-on-comment t
+  "Non-nil means disable automatic completion on comments."
+  :type 'boolean
+  :group 'auto-complete)
+
+(defcustom ac-stop-flymake-on-completing t
+  "Non-nil means disble flymake temporarily on completing."
+  :type 'boolean
   :group 'auto-complete)
 
 (defcustom ac-use-fuzzy t
@@ -1070,6 +1080,28 @@ that have been made before in this function."
     (cancel-timer ac-quick-help-timer)
     (setq ac-quick-help-timer nil)))
 
+(defun ac-pos-tip-show-quick-help (menu &optional item &rest args)
+  (let* ((point (plist-get args :point))
+         (around nil)
+         (parent-offset (popup-offset menu))
+         (doc (popup-menu-documentation menu item)))
+    (when (stringp doc)
+      (if (popup-hidden-p menu)
+          (setq around t)
+        (setq point nil))
+      (with-no-warnings
+        (pos-tip-show doc
+                      'popup-tip-face
+                      (or point
+                          (and menu
+                               (popup-child-point menu parent-offset))
+                          (point))
+                      nil 0
+                      popup-tip-max-width
+                      nil nil
+                      (and (not around) 0)))
+      nil)))
+
 (defun ac-quick-help (&optional force)
   (interactive)
   (when (and (or force (null this-command))
@@ -1078,10 +1110,7 @@ that have been made before in this function."
     (if (and ac-quick-help-prefer-x
              (eq window-system 'x)
              (featurep 'pos-tip))
-        (let ((doc (popup-menu-documentation ac-menu)))
-          (when doc
-            (with-no-warnings
-              (pos-tip-show doc nil (popup-child-point ac-menu 0) nil 0 nil nil nil 0))))
+        (ac-pos-tip-show-quick-help ac-menu nil :point ac-point)
       (setq ac-quick-help
             (popup-menu-show-quick-help ac-menu nil
                                         :point ac-point
@@ -1344,6 +1373,9 @@ that have been made before in this function."
 
 ;;;; Auto complete mode
 
+(defun ac-cursor-on-comment-p (&optional point)
+  (eq (get-text-property (or point (point)) 'face) 'font-lock-comment-face))
+
 (defun ac-trigger-command-p (command)
   "Return non-nil if `COMMAND' is a trigger command."
   (and (symbolp command)
@@ -1362,7 +1394,9 @@ that have been made before in this function."
                                       (or (eq this-command 'auto-complete) ; special case
                                           (ac-trigger-command-p this-command)
                                           (and ac-completing
-                                               (memq this-command ac-trigger-commands-on-completing)))))
+                                               (memq this-command ac-trigger-commands-on-completing)))
+                                      (not (and ac-disable-on-comment
+                                                (ac-cursor-on-comment-p)))))
               (ac-compatible-package-command-p this-command))
           (progn
             (if (or (not (symbolp this-command))
@@ -1390,7 +1424,12 @@ that have been made before in this function."
   (if ac-use-comphist
       (ac-comphist-init))
   (unless ac-clear-variables-every-minute-timer
-    (setq ac-clear-variables-every-minute-timer (run-with-timer 60 60 'ac-clear-variables-every-minute))))
+    (setq ac-clear-variables-every-minute-timer (run-with-timer 60 60 'ac-clear-variables-every-minute)))
+  (if ac-stop-flymake-on-completing
+      (defadvice flymake-on-timer-event (around ac-flymake-stop-advice activate)
+        (unless ac-completing
+          ad-do-it))
+    (ad-disable-advice 'flymake-on-timer-event 'around 'ac-flymake-stop-advice)))
 
 (define-minor-mode auto-complete-mode
   "AutoComplete mode"
@@ -1521,16 +1560,88 @@ that have been made before in this function."
 (defvar ac-symbols-cache nil)
 (ac-clear-variable-every-10-minutes 'ac-symbols-cache)
 
+(defun ac-symbol-file (symbol type)
+  (if (fboundp 'find-lisp-object-file-name)
+      (find-lisp-object-file-name symbol type)
+    (let ((file-name (describe-simplify-lib-file-name
+                      (symbol-file symbol type))))
+      (when (equal file-name "loaddefs.el")
+        ;; Find the real def site of the preloaded object.
+        (let ((location (condition-case nil
+                            (if (eq type 'defun)
+                                (find-function-search-for-symbol symbol nil
+                                                                 "loaddefs.el")
+                              (find-variable-noselect symbol file-name))
+                          (error nil))))
+          (when location
+            (with-current-buffer (car location)
+              (when (cdr location)
+                (goto-char (cdr location)))
+              (when (re-search-backward
+                     "^;;; Generated autoloads from \\(.*\\)" nil t)
+                (setq file-name (match-string 1)))))))
+      (if (and (null file-name)
+               (or (eq type 'defun)
+                   (integerp (get symbol 'variable-documentation))))
+          ;; It's a object not defined in Elisp but in C.
+          (if (get-buffer " *DOC*")
+              (if (eq type 'defun)
+                  (help-C-file-name (symbol-function symbol) 'subr)
+                (help-C-file-name symbol 'var))
+            'C-source)
+        file-name))))
+
 (defun ac-symbol-documentation (symbol)
   (if (stringp symbol)
       (setq symbol (intern-soft symbol)))
-  (or (ignore-errors (documentation symbol t))
-      (ignore-errors (documentation-property symbol 'variable-documentation t))))
+  (ignore-errors
+    (with-temp-buffer
+      (let ((standard-output (current-buffer)))
+        (prin1 symbol)
+        (princ " is ")
+        (cond
+         ((fboundp symbol)
+          (describe-function-1 symbol)
+          (buffer-string))
+         ((boundp symbol)
+          (let ((file-name  (ac-symbol-file symbol 'defvar)))
+            (princ "a variable")
+            (when file-name
+              (princ " defined in `")
+              (princ (if (eq file-name 'C-source)
+                         "C source code"
+                       (file-name-nondirectory file-name))))
+            (princ "'.\n\n")
+            (princ (or (documentation-property symbol 'variable-documentation t)
+                       "Not documented."))
+            (buffer-string)))
+         ((facep symbol)
+          (let ((file-name  (ac-symbol-file symbol 'defface)))
+            (princ "a face")
+            (when file-name
+              (princ " defined in `")
+              (princ (if (eq file-name 'C-source)
+                         "C source code"
+                       (file-name-nondirectory file-name))))
+            (princ "'.\n\n")
+            (princ (or (documentation-property symbol 'face-documentation t)
+                       "Not documented."))
+            (buffer-string)))
+         (t
+          (let ((doc (documentation-property symbol 'group-documentation t)))
+            (when doc
+              (princ "a group.\n\n")
+              (princ doc)
+              (buffer-string)))))))))
 
 (defun ac-symbol-candidates ()
   (or ac-symbols-cache
       (setq ac-symbols-cache
-            (loop for x being the symbols collect (symbol-name x)))))
+            (loop for x being the symbols
+                  if (or (fboundp x)
+                         (boundp x)
+                         (symbol-plist x))
+                  collect (symbol-name x)))))
 
 (ac-define-source symbols
   '((candidates . ac-symbol-candidates)
