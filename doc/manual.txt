@@ -54,6 +54,12 @@ Finally type `RET` to start installation. After installation, you may see the fo
 
 You can also install from terminal like:
 
+    $ make install
+    $ # or with directory specified
+    $ make install DIR=$HOME/.emacs.d/
+
+If you don't have GNU Make, run emacs like:
+
     $ emacs -batch -l etc/install.el
 
 **Example message after installation (\*Installation Result* Buffer)**
@@ -196,7 +202,7 @@ So, as of `auto-complete` command, it is a little different from an original aut
 
 * Otherwise
 
-  Otherwise start completion with showing completion menu.
+  Otherwise start completion with/without expanding a whole common part and showing completion menu. See also [`ac-show-menu-immediately-on-auto-complete`](#) and [`ac-expand-on-auto-complete`](#).
 
 ### Completion by Fuzzy Matching ###
 
@@ -572,6 +578,22 @@ Delay time to start completion in real number seconds. It is a trade off of resp
 ### `ac-auto-show-menu` ###
 
 Show completion menu automatically if `t` specified. `t` means always automatically showing completion menu. `nil` means never showing completion menu. Real number means delay time in seconds.
+
+### `ac-show-menu-immediately-on-auto-complete` ###
+
+Whether or not to show completion menu immediately on `auto-complete` command. If inline completion has already been showed, this configuration will be ignored.
+
+### `ac-expand-on-auto-complete` ###
+
+Whether or not to expand a common part of whole candidates.
+
+### `ac-disable-faces` ###
+
+Specify a list of face symbols for disabling auto completion. Auto completion will not be started if a face text property at a point is included in the list.
+
+### `ac-stop-flymake-on-completing` ###
+
+Whether or not to stop Flymake on completion.
 
 ### `ac-use-fuzzy` ###
 
@@ -967,6 +989,20 @@ We don't good answers now, but you may shot the troubles by changing font size w
 
     (set-face-font 'ac-candidate-face "MS Gothic 11")
     (set-face-font 'ac-selection-face "MS Gothic 11")
+
+Known Bugs
+----------
+
+### Auto completion will not be started in a buffer `flyspell-mode` enabled ###
+
+A way of delaying processes of `flyspell-mode` disables auto completion. You can avoid this problem by `M-x ac-flyspell-workaround`. You can write the following code into your `~/.emacs`.
+
+    (ac-flyspell-workaround)
+
+Reporting Bugs
+--------------
+
+Visit [Auto Complete Mode Bug Tracking System](http://cx4a.org/redmine/projects/auto-complete-mode) and create a new ticket.
 
 [GNU Emacs]: http://www.gnu.org/software/emacs/
 [GPLv3]: http://gplv3.fsf.org/

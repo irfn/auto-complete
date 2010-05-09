@@ -54,6 +54,12 @@ Auto Complete Mode（通称、`auto-complete.el`, `auto-complete-mode`）は[GNU
 
 あるいは、次のようにターミナルからインストールすることもできます。
 
+    $ make install
+    $ # あるいはディレクトリをあらかじめ指定して
+    $ make install DIR=$HOME/.emacs.d/
+
+GNU Makeがない場合は次のようにします。
+
     $ emacs -batch -l etc/install.el
 
 **インストール後のメッセージ例（\*Installation Result*バッファ）**
@@ -198,7 +204,7 @@ TABによる補完では共通部分の展開などで何度かTABを押す必�
 
 * その他の場合
 
-  その他の場合、補完メニューを表示して補完を開始します。その後の操作は自動的に補完が開始された場合と同じになります。
+  その他の場合、全体共通部分を展開しつつ補完メニューを表示して補完を開始します。その後の操作は自動的に補完が開始された場合と同じになります。[`ac-show-menu-immediately-on-auto-complete`](#)と[`ac-expand-on-auto-complete`](#)も参照してください。
 
 ### 曖昧マッチによる補完 ###
 
@@ -576,6 +582,22 @@ Tips
 ### `ac-auto-show-menu` ###
 
 補完時に自動的に補完メニューを表示するかどうかです。`t`の場合は常に自動的に表示します。`nil`の場合は絶対に表示されません。実数を指定すると表示までの遅延時間を秒数で指定できます。
+
+### `ac-show-menu-immediately-on-auto-complete` ###
+
+`auto-complete`時にただちに補完メニューを表示するかどうかです。すでにインライン補完が表示されている場合は、この設定は無視されます。
+
+### `ac-expand-on-auto-complete` ###
+
+`auto-complete`時に補完候補全体の共通部分を展開するかどうかです。
+
+### `ac-disable-faces` ###
+
+自動補完を無効にするフェイス名をシンボルのリストで指定します。カーソル位置のフェイステキストプロパティがそのリストに含まれる場合に自動補完が無効になる仕組みです。
+
+### `ac-stop-flymake-on-completing` ###
+
+補完時にFlymakeを中止するかどうかです。
 
 ### `ac-use-fuzzy` ###
 
@@ -972,6 +994,20 @@ Ubuntu 9.10にて[IPAフォント](http://ossipedia.ipa.go.jp/ipafont/)をXftで
 
     (set-face-font 'ac-candidate-face "MS Gothic 11")
     (set-face-font 'ac-selection-face "MS Gothic 11")
+
+既知の問題
+----------
+
+### `flyspell-mode`が有効なバッファで自動補完できない ###
+
+`flyspell-mode`の遅延手法が原因で自動補完ができません。これを回避するには`M-x ac-flyspell-workaround`とするか`~/.emacs`に次のように書いてください。
+
+    (ac-flyspell-workaround)
+
+バグレポート
+------------
+
+[Auto Complete Modeのバグトラッキングシステム](http://cx4a.org/redmine/projects/auto-complete-mode)に新しいチケットを登録してください。
 
 [GNU Emacs]: http://www.gnu.org/software/emacs/
 [GPLv3]: http://gplv3.fsf.org/
